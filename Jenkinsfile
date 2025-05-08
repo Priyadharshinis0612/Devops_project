@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CREDENTIALS = 'docker_credentials'  // Add Docker registry credentials (if needed)
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,11 +15,10 @@ pipeline {
         stage('Test Docker') {
             steps {
                 script {
-                    // Comment out the one that does not apply
-                    // Use this for Windows:
+                    // For Windows:
                     bat 'docker --version'
 
-                    // Use this for Linux/Mac agents:
+                    // For Linux/Mac:
                     // sh 'docker --version'
                 }
             }
@@ -29,6 +32,23 @@ pipeline {
             }
         }
 
-        // Continue with the rest of your stages...
+        stage('Push Docker Image to Docker Hub') {
+            when {
+                branch 'main'  // Push only from main branch (optional)
+            }
+            steps {
+                script {
+                    // Docker login to Docker Hub (or any other registry)
+                    withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        bat """
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+                            docker push priyadharshini06/clean-blog:3
+                        """
+                    }
+                }
+            }
+        }
+
+        // Continue with other stages like Deploy, Test, etc.
     }
 }
