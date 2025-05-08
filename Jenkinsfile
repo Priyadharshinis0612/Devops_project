@@ -2,53 +2,72 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS = 'docker_credentials'  // Add Docker registry credentials (if needed)
+        DOCKER_CREDENTIALS = 'docker_credentials'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github_credentials', url: 'https://github.com/Priyadharshinis0612/Devops_project.git', branch: 'main'
-            }
-        }
-
-        stage('Test Docker') {
-            steps {
-                script {
-                    // For Windows:
-                    bat 'docker --version'
-
-                    // For Linux/Mac:
-                    // sh 'docker --version'
-                }
+                git credentialsId: 'github_credentials', url: 'https://github.com/Priyadharshinis0612/Devops_project.git' , branch: 'main'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'docker build -t priyadharshini06/clean-blog:3 .'
+                    docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
                 }
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
-            when {
-                branch 'main'  // Push only from main branch (optional)
-            }
+        stage('Push to Docker Hub') {
             steps {
-                script {
-                    // Docker login to Docker Hub (or any other registry)
-                    withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        bat """
-                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                            docker push priyadharshini06/clean-blog:3
-                        """
+                withDockerRegistry([credentialsId: 'dockerhub_credentials', url: '']) {
+                    script {
+                        docker.image("${IMAGE_NAME}:${BUILD_NUMBER}").push()
+                        docker.image("${IMAGE_NAME}:${BUILD_NUMBER}").push('latest')
                     }
                 }
             }
         }
 
-        // Continue with other stages like Deploy, Test, etc.
+        stage('Deploy to Dev Environment') {
+            steps {
+                sh '''
+                docker stop cleanblog-dev || true
+                docker rm cleanblog-dev || true
+                docker run -d --name cleanblog-dev -p 8081:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
+                '''
+            }
+        }
+
+        stage('Deploy to QA Environment') {
+            steps {
+                input "Deploy to QA?"
+                sh '''
+                docker stop cleanblog-qa || true
+                docker rm cleanblog-qa || true
+                docker run -d --name cleanblog-qa -p 8082:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
+                '''
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                input "Deploy to Production?"
+                sh '''
+                docker stop cleanblog-prod || true
+                docker rm cleanblog-prod || true
+                docker run -d --name cleanblog-prod -p 8080:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up unused Docker images..."
+            sh 'docker image prune -f'
+        }
     }
 }
