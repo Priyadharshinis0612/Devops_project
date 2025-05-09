@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                cleanWs()  // Clean workspace before starting
+                cleanWs()  // Clean the workspace before starting
                 script {
                     // Correct GitHub repository URL and branch
                     git url: 'https://github.com/Priyadharshinis0612/Devops_project.git', branch: 'main'
