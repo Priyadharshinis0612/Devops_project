@@ -2,72 +2,51 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS = 'docker_credentials'
+        IMAGE_NAME = 'priyadharshini06/mywebsite'  // Correct Docker image name
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git credentialsId: 'github_credentials', url: 'https://github.com/Priyadharshinis0612/Devops_project.git' , branch: 'main'
+                git 'https://github.com/yourusername/yourrepo.git'  // Replace with your actual repo URL
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                    docker.build("${IMAGE_NAME}:latest")
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                // Add test scripts if needed
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub_credentials', url: '']) {
-                    script {
-                        docker.image("${IMAGE_NAME}:${BUILD_NUMBER}").push()
-                        docker.image("${IMAGE_NAME}:${BUILD_NUMBER}").push('latest')
-                    }
+                script {
+                    docker.image("${IMAGE_NAME}:latest").push()
                 }
             }
         }
 
-        stage('Deploy to Dev Environment') {
+        stage('Deploy to Localhost') {
             steps {
-                sh '''
-                docker stop cleanblog-dev || true
-                docker rm cleanblog-dev || true
-                docker run -d --name cleanblog-dev -p 8081:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
-                '''
+                sh "docker run -d -p 3000:3000 ${IMAGE_NAME}:latest"  // Ensure the correct port is mapped (3000 in this case)
             }
-        }
-
-        stage('Deploy to QA Environment') {
-            steps {
-                input "Deploy to QA?"
-                sh '''
-                docker stop cleanblog-qa || true
-                docker rm cleanblog-qa || true
-                docker run -d --name cleanblog-qa -p 8082:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
-                '''
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                input "Deploy to Production?"
-                sh '''
-                docker stop cleanblog-prod || true
-                docker rm cleanblog-prod || true
-                docker run -d --name cleanblog-prod -p 8080:80 priyadharshini06/clean-blog:${BUILD_NUMBER}
-                '''
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Cleaning up unused Docker images..."
-            sh 'docker image prune -f'
         }
     }
 }
