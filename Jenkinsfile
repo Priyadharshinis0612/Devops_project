@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/yourusername/yourrepo.git'  // Replace with your actual repo URL
+                git 'https://github.com/yourusername/yourrepo.git',branch: 'main'  // Replace with your actual repo URL
             }
         }
 
