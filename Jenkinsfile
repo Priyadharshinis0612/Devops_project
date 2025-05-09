@@ -10,7 +10,6 @@ pipeline {
             steps {
                 cleanWs()  // Clean workspace before starting
                 script {
-                    // Correct GitHub repository URL and branch
                     git url: 'https://github.com/Priyadharshinis0612/Devops_project.git', branch: 'main'
                 }
             }
@@ -18,8 +17,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}:latest")  // Build Docker image
+                dir("${env.WORKSPACE}") {
+                    script {
+                        sh 'ls -la' // Optional: lists files to ensure Dockerfile is there
+                        sh "docker build -t ${IMAGE_NAME}:latest ."
+                    }
                 }
             }
         }
@@ -49,7 +51,7 @@ pipeline {
 
         stage('Deploy to Localhost') {
             steps {
-                sh "docker run -d -p 3000:3000 ${IMAGE_NAME}:latest"  // Ensure correct port is mapped (3000)
+                sh "docker run -d -p 3000:3000 ${IMAGE_NAME}:latest"  // Change port if needed
             }
         }
     }
