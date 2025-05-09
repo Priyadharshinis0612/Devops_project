@@ -44,14 +44,16 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    docker.image("${IMAGE_NAME}:latest").push()
+                    sh "docker push ${IMAGE_NAME}:latest"
                 }
             }
         }
 
         stage('Deploy to Localhost') {
             steps {
-                sh "docker run -d -p 3000:3000 ${IMAGE_NAME}:latest"  // Change port if needed
+                script {
+                    sh "docker run -d -p 3000:3000 ${IMAGE_NAME}:latest"  // Change port if needed
+                }
             }
         }
     }
