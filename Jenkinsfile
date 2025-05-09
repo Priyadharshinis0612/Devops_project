@@ -52,8 +52,8 @@ pipeline {
         stage('Deploy to Localhost') {
             steps {
                 script {
-                    // Update port binding to avoid conflict (using port 8082)
-                    sh "docker run -d -p 8082:3000 ${IMAGE_NAME}:latest"  // Change port to 8082
+                    // Change port binding to avoid conflicts (e.g., use 8082 instead of 8081)
+                    sh "docker run -d -p 8082:3000 ${IMAGE_NAME}:latest"
                 }
             }
         }
