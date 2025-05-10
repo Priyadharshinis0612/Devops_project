@@ -12,5 +12,4 @@ RUN npm install
 COPY . .
 
 # Run the app
-CMD ["node", "app.js"]
-
+CMD ["node", "src/js/script.js"]
