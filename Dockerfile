@@ -1,14 +1,20 @@
+# Base image with Node.js
 FROM node:18
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json (if any)
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the entire src folder
+# Copy everything to the container's working directory
 COPY . .
 
-# Set the command to run the server.js (Express app)
-CMD ["node", "src/js/server.js"]
+# Expose the port
+EXPOSE 3000
+
+# Start the app
+CMD ["node", "server.js"]
