@@ -1,0 +1,117 @@
+/* Typography improvements */
+body {
+    font-family: 'Lora', serif;
+    line-height: 1.7;
+    color: #343a40;
+    background-color: #ffffff;
+}
+
+/* Navbar style */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: background-color 0.3s ease;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #212529 !important;
+}
+
+.navbar-nav .nav-link {
+    color: #495057 !important;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff !important;
+}
+
+/* Header style */
+.masthead {
+    background-size: cover;
+    background-position: center;
+    padding: 10rem 0;
+    color: #fff;
+    text-align: center;
+}
+
+.site-heading h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+}
+
+.site-heading .subheading {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+/* Post preview */
+.post-preview {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 2rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.post-preview:hover {
+    background-color: #f8f9fa;
+    padding-left: 10px;
+    border-left: 3px solid #007bff;
+}
+
+.post-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.post-subtitle {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #6c757d;
+}
+
+.post-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+/* Pager Button */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Footer styling */
+footer {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+}
+
+footer .fa-stack {
+    transition: transform 0.3s ease;
+}
+
+footer .fa-stack:hover {
+    transform: scale(1.1);
+    color: #007bff;
+}
